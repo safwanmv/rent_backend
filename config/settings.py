@@ -25,7 +25,8 @@ SECRET_KEY = "django-insecure-#(6hjx8upf+zc7gwciuk$+7i0ylte026ge=yo4r7^&y+aew*ay
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Add '10.0.2.2' for the Android emulator and 'localhost' for development
+ALLOWED_HOSTS = ["10.0.2.2", "127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -119,3 +120,8 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 AUTH_USER_MODEL = "accounts.User"
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}

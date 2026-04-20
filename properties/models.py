@@ -6,6 +6,7 @@ from django.db import models
 class Category(models.Model):
     category_id = models.CharField(unique=True, max_length=20)
     name = models.CharField(max_length=100)
+    owner = models.ForeignKey("accounts.User", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -26,7 +27,8 @@ class Room(models.Model):
 
 class Customer(models.Model):
     customer_id = models.CharField(max_length=20, unique=True)
-    user = models.OneToOneField("accounts.User", on_delete=models.CASCADE)
+    owner = models.ForeignKey("accounts.User", on_delete=models.CASCADE)
+    customer_name = models.CharField(max_length=100, null=True)
     address = models.TextField()
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
     rent_amount = models.FloatField()
@@ -34,4 +36,4 @@ class Customer(models.Model):
     joined_date = models.DateField()
 
     def __str__(self):
-        return self.name
+        return self.customer_name

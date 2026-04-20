@@ -4,29 +4,31 @@ from rest_framework import status
 from .models import Room, Category, Customer
 from .serializers import RoomSerializer, CategorySerializer, CustomerSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 
 
 class RoomListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, id=None):
         if id:
-            room = get_object_or_404(Room, id=id)
+            room = get_object_or_404(Room, id=id, owner=request.user)
             serializer = RoomSerializer(room)
             return Response(serializer.data)
 
-        room = Room.objects.all()
+        room = Room.objects.filter(owner=request.user)
         serializer = RoomSerializer(room, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         serializer = RoomSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, id):
-        room = get_object_or_404(Room, id=id)
+    def patch(self, request, id=None):
+        room = get_object_or_404(Room, id=id, owner=request.user)
         serializer = RoomSerializer(room, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -34,7 +36,7 @@ class RoomListCreateAPIView(APIView):
         return Response(serializer.errors)
 
     def delete(self, request, id):
-        room = get_object_or_404(Room, id=id)
+        room = get_object_or_404(Room, id=id, owner=request.user)
         room.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -43,32 +45,34 @@ class RoomListCreateAPIView(APIView):
 
 
 class CategoryListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, id=None):
         if id:
-            category = get_object_or_404(Category, id=id)
+            category = get_object_or_404(Category, id=id, owner=request.user)
             serializer = CategorySerializer(category)
             return Response(serializer.data)
-        category = Category.objects.all()
+        category = Category.objects.filter(owner=request.user)
         serializer = CategorySerializer(category, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, id=None):
-        category = get_object_or_404(Category, id=id)
+        category = get_object_or_404(Category, id=id, owner=request.user)
         serializer = CategorySerializer(category, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
 
-    def delete(self, reqeust, id=None):
-        category = get_object_or_404(Category, id=id)
+    def delete(self, request, id=None):
+        category = get_object_or_404(Category, id=id, owner=request.user)
         category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -77,24 +81,26 @@ class CategoryListCreateAPIView(APIView):
 
 
 class CustomerListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, id=None):
         if id:
-            customer = get_object_or_404(Customer, id=id)
+            customer = get_object_or_404(Customer, id=id, owner=request.user)
             serializer = CustomerSerializer(customer)
             return Response(serializer.data)
-        customer = Customer.objects.all()
+        customer = Customer.objects.filter(owner=request.user)
         serializer = CustomerSerializer(customer, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         serializer = CustomerSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors)
 
     def patch(self, request, id=None):
-        customer = get_object_or_404(Customer, id=id)
+        customer = get_object_or_404(Customer, id=id, owner=request.user)
         serializer = CustomerSerializer(customer, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -102,6 +108,6 @@ class CustomerListCreateAPIView(APIView):
         return Response(serializer.errors)
 
     def delete(self, request, id=None):
-        customer = get_object_or_404(Customer, id=id)
+        customer = get_object_or_404(Customer, id=id, owner=request.user)
         customer.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
