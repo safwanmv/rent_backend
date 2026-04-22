@@ -6,15 +6,27 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = "__all__"
+        extra_kwargs = {
+            "owner": {"read_only": True},
+            "category_id": {"read_only": True},  # 👈 auto-generated
+        }
 
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = "__all__"
+        extra_kwargs = {
+            "owner": {"read_only": True},
+            "room_id": {"read_only": True},  # 👈 auto-generated
+        }
 
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = "__all__"
+        extra_kwargs = {
+            "owner": {"read_only": True},
+            "customer_id": {"read_only": True},  # 👈 auto-generated
+        }
