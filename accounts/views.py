@@ -9,6 +9,8 @@ class CreateUserAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        print("USER:", request.user)
+        print("ROLE:", request.user.role)
         if request.user.role != "admin":
             return Response(
                 {

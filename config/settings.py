@@ -26,9 +26,16 @@ SECRET_KEY = "django-insecure-#(6hjx8upf+zc7gwciuk$+7i0ylte026ge=yo4r7^&y+aew*ay
 DEBUG = True
 
 # Add '10.0.2.2' for the Android emulator and 'localhost' for development
-ALLOWED_HOSTS = ["10.0.2.2", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = [
+    "rent-backend-tmrr.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
+import os
 
+SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
 
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 # Application definition
 
 INSTALLED_APPS = [
@@ -125,3 +132,6 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
