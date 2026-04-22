@@ -7,17 +7,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # ========================
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
 
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-    "rent-backend-tmrr.onrender.com",
+    "rent-backend-trmr.onrender.com",  # ✅ FIXED (correct URL)
     "localhost",
     "127.0.0.1",
 ]
 
-CSRF_TRUSTED_ORIGINS = ["https://rent-backend-tmrr.onrender.com"]
+CSRF_TRUSTED_ORIGINS = ["https://rent-backend-trmr.onrender.com"]
 
 # ========================
 # APPLICATIONS
@@ -41,8 +41,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # WhiteNoise (for static files in production)
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ important
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -59,7 +58,7 @@ ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ========================
-# DATABASE (TEMP: SQLite)
+# DATABASE
 # ========================
 
 DATABASES = {
@@ -68,8 +67,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-# ⚠️ Later: switch to PostgreSQL (Render DB)
 
 # ========================
 # AUTH
@@ -117,11 +114,10 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-# Required for WhiteNoise
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ========================
-# SECURITY (IMPORTANT FOR RENDER)
+# SECURITY (RENDER FIX)
 # ========================
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
