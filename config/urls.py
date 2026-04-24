@@ -32,6 +32,6 @@ urlpatterns = [
     # create user
     path("api/accounts/", include("accounts.urls")),
     # JWT endpoints
-    path("api/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    # path("api/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    # path("api/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]
