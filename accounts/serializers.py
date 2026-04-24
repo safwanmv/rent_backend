@@ -26,10 +26,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        created_by = validated_data.pop("created_by", None)  # ← extract it
         user = User.objects.create_user(
             username=validated_data["username"],
             password=validated_data["password"],
         )
         user.role = validated_data.get("role", "owner")
+        user.created_by = created_by  # ← assign it
         user.save()
         return user
