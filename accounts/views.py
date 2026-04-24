@@ -5,6 +5,7 @@ from .serializers import UserCreateSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer, UserCreateSerializer
+from .models import User
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -39,29 +40,22 @@ class DashboardStatsAPIView(APIView):
 
     def get(self, request):
         user = request.user
+        try:
+            if user.role == "admin":
+                users_created = User.objects.filter(created_by=user).count()
+                return Response(
+                    {
+                        "role": "admin",
+                        "stats": {
+                            "users_created": users_created,
+                        },
+                    }
+                )
 
-        if user.role == "admin":
-            from .models import User
+            elif user.role == "owner":
+                return Response({"role": "owner", "stats": {}})
 
-            users_created = User.objects.filter(created_by=user).count()
-            return Response(
-                {
-                    "role": "admin",
-                    "stats": {
-                        "users_created": users_created,
-                    },
-                }
-            )
+            return Response({"error": "Unknown role"}, status=400)
 
-        elif user.role == "owner":
-            # owner-specific stats
-            return Response(
-                {
-                    "role": "owner",
-                    "stats": {
-                        # e.g. "branches_count": Branch.objects.filter(owner=user).count(),
-                    },
-                }
-            )
-
-        return Response({"error": "Unknown role"}, status=400)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)  # ← will show exact error

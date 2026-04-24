@@ -13,14 +13,23 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "password", "role"]
-        extra_kwargs = {"password": {"write_only": True}}
+        fields = [
+            "id",
+            "username",
+            "password",
+            "role",
+            "created_by",
+        ]  # ← add created_by
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "created_by": {"read_only": True},  # ← set by view, not request body
+        }
 
     def create(self, validated_data):
-        role = validated_data.get("role", "owner")
         user = User.objects.create_user(
-            username=validated_data["username"], password=validated_data["password"]
+            username=validated_data["username"],
+            password=validated_data["password"],
         )
-        user.role = role
+        user.role = validated_data.get("role", "owner")
         user.save()
         return user
