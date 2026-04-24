@@ -29,3 +29,39 @@ class CreateUserAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+
+
+# views.py
+
+
+class DashboardStatsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        if user.role == "admin":
+            from .models import User
+
+            users_created = User.objects.filter(created_by=user).count()
+            return Response(
+                {
+                    "role": "admin",
+                    "stats": {
+                        "users_created": users_created,
+                    },
+                }
+            )
+
+        elif user.role == "owner":
+            # owner-specific stats
+            return Response(
+                {
+                    "role": "owner",
+                    "stats": {
+                        # e.g. "branches_count": Branch.objects.filter(owner=user).count(),
+                    },
+                }
+            )
+
+        return Response({"error": "Unknown role"}, status=400)
