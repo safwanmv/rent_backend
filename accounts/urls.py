@@ -5,6 +5,7 @@ from .views import (
     CustomTokenObtainPairView,
     DashboardStatsAPIView,
     UserListView,
+    UserDetailView,
 )
 
 urlpatterns = [
@@ -14,4 +15,5 @@ urlpatterns = [
     # urls.py
     path("dashboard/stats/", DashboardStatsAPIView.as_view(), name="dashboard-stats"),
     path("users/", UserListView.as_view(), name="user-list"),
+    path("users/<int:pk>/", UserDetailView.as_view(), name="user-detail"),
 ]

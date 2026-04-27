@@ -72,3 +72,40 @@ class UserListView(APIView):
         users = User.objects.filter(role="owner").order_by("-date_joined")
         serializer = UserListSerializer(users, many=True)
         return Response(serializer.data)
+
+
+class UserDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk, role="owner")
+        except User.DoesNotExist:
+            return None
+
+    # Edit user
+    def patch(self, request, pk):
+        if request.user.role != "admin":
+            return Response({"error": "Access denied"}, status=403)
+
+        user = self.get_object(pk)
+        if not user:
+            return Response({"error": "User not found"}, status=404)
+
+        serializer = UserListSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    # Delete user
+    def delete(self, request, pk):
+        if request.user.role != "admin":
+            return Response({"error": "Access denied"}, status=403)
+
+        user = self.get_object(pk)
+        if not user:
+            return Response({"error": "User not found"}, status=404)
+
+        user.delete()
+        return Response({"message": "User deleted successfully"}, status=200)
