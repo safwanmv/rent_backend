@@ -4,7 +4,11 @@ from rest_framework import status
 from .serializers import UserCreateSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenObtainPairSerializer, UserCreateSerializer
+from .serializers import (
+    CustomTokenObtainPairSerializer,
+    UserCreateSerializer,
+    UserListSerializer,
+)
 from .models import User
 
 
@@ -32,9 +36,6 @@ class CreateUserAPIView(APIView):
         return Response(serializer.errors, status=400)
 
 
-# views.py
-
-
 class DashboardStatsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -59,3 +60,15 @@ class DashboardStatsAPIView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=500)  # ← will show exact error
+
+
+class UserListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role != "admin":
+            return Response({"error": "Access denied"}, status=403)
+
+        users = User.objects.all().order_by("-date_joined")
+        serializer = UserListSerializer(users, many=True)
+        return Response(serializer.data)

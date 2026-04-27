@@ -1,6 +1,11 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import CreateUserAPIView, CustomTokenObtainPairView, DashboardStatsAPIView
+from .views import (
+    CreateUserAPIView,
+    CustomTokenObtainPairView,
+    DashboardStatsAPIView,
+    UserListView,
+)
 
 urlpatterns = [
     path("login/", CustomTokenObtainPairView.as_view()),  # 👈 custom view
@@ -8,4 +13,5 @@ urlpatterns = [
     path("create-user/", CreateUserAPIView.as_view()),
     # urls.py
     path("dashboard/stats/", DashboardStatsAPIView.as_view(), name="dashboard-stats"),
+    path("users/", UserListView.as_view(), name="user-list"),
 ]

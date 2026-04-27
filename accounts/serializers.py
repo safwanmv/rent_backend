@@ -35,3 +35,21 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.created_by = created_by  # ← assign it
         user.save()
         return user
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    created_by_username = serializers.CharField(
+        source="created_by.username", read_only=True
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "email",
+            "role",
+            "created_by_username",
+            "date_joined",
+            "is_active",
+        ]
