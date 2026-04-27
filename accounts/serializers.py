@@ -53,3 +53,11 @@ class UserListSerializer(serializers.ModelSerializer):
             "date_joined",
             "is_active",
         ]
+        extra_kwargs = {
+            "email": {
+                "required": False,
+                "allow_null": True,
+                "allow_blank": True,
+            },
+            "username": {"required": False},
+        }
