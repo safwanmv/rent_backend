@@ -69,6 +69,6 @@ class UserListView(APIView):
         if request.user.role != "admin":
             return Response({"error": "Access denied"}, status=403)
 
-        users = User.objects.all().order_by("-date_joined")
+        users = User.objects.filter(role="owner").order_by("-date_joined")
         serializer = UserListSerializer(users, many=True)
         return Response(serializer.data)
