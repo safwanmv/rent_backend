@@ -83,6 +83,18 @@ class UserDetailView(APIView):
         except User.DoesNotExist:
             return None
 
+    # 👇 Add this — fetch single user
+    def get(self, request, pk):
+        if request.user.role != "admin":
+            return Response({"error": "Access denied"}, status=403)
+
+        user = self.get_object(pk)
+        if not user:
+            return Response({"error": "User not found"}, status=404)
+
+        serializer = UserListSerializer(user)
+        return Response(serializer.data)
+
     # Edit user
     def patch(self, request, pk):
         if request.user.role != "admin":
