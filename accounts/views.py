@@ -10,6 +10,11 @@ from .serializers import (
     UserListSerializer,
 )
 from .models import User
+from properties.models import (
+    Room,
+    Category,
+    Customer,
+)  # 👈 adjust import to your app name
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -43,18 +48,39 @@ class DashboardStatsAPIView(APIView):
         user = request.user
         try:
             if user.role == "admin":
-                users_created = User.objects.filter(created_by=user).count()
+                owners = User.objects.filter(created_by=user)
+                users_created = owners.count()
+                total_categories = Category.objects.filter(owner__in=owners).count()
+                total_rooms = Room.objects.filter(owner__in=owners).count()
+                total_customers = Customer.objects.filter(owner__in=owners).count()
+
                 return Response(
                     {
                         "role": "admin",
                         "stats": {
                             "users_created": users_created,
+                            "total_categories": total_categories,
+                            "total_rooms": total_rooms,
+                            "total_customers": total_customers,
                         },
                     }
                 )
 
             elif user.role == "owner":
-                return Response({"role": "owner", "stats": {}})
+                total_categories = Category.objects.filter(owner=user).count()
+                total_rooms = Room.objects.filter(owner=user).count()
+                total_customers = Customer.objects.filter(owner=user).count()
+
+                return Response(
+                    {
+                        "role": "owner",
+                        "stats": {
+                            "total_categories": total_categories,
+                            "total_rooms": total_rooms,
+                            "total_customers": total_customers,
+                        },
+                    }
+                )
 
             return Response({"error": "Unknown role"}, status=400)
 
