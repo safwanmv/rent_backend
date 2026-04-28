@@ -7,6 +7,57 @@ from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 
 
+class CategoryListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id=None):
+        if id:
+            category = get_object_or_404(Category, id=id, owner=request.user)
+            serializer = CategorySerializer(category)
+            return Response(serializer.data)
+        category = Category.objects.filter(owner=request.user)
+        serializer = CategorySerializer(category, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(owner=request.user)
+            return Response(
+                {
+                    "message": "Category created successfully",  # 👈 add this
+                    "data": serializer.data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, id=None):
+        category = get_object_or_404(Category, id=id, owner=request.user)
+        serializer = CategorySerializer(category, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "message": "Category edited successfully",  # 👈 add this
+                    "data": serializer.data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors)
+
+    def delete(self, request, id=None):
+        category = get_object_or_404(Category, id=id, owner=request.user)
+        category.delete()
+        return Response(
+            {"message": "Deleted successfully"}, status=status.HTTP_204_NO_CONTENT
+        )
+
+
+# ------------------------------------------------------------------------------------#
+
+
 class RoomListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -24,7 +75,13 @@ class RoomListCreateAPIView(APIView):
         serializer = RoomSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                {
+                    "message": "Room created successfully",
+                    "data": serializer.data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, id=None):
@@ -32,7 +89,13 @@ class RoomListCreateAPIView(APIView):
         serializer = RoomSerializer(room, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(
+                {
+                    "message": "Room edited successfully",
+                    "data": serializer.data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
         return Response(serializer.errors)
 
     def delete(self, request, id):
@@ -42,42 +105,6 @@ class RoomListCreateAPIView(APIView):
 
 
 # -------------------------------------------------------------------------------------#
-
-
-class CategoryListCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, id=None):
-        if id:
-            category = get_object_or_404(Category, id=id, owner=request.user)
-            serializer = CategorySerializer(category)
-            return Response(serializer.data)
-        category = Category.objects.filter(owner=request.user)
-        serializer = CategorySerializer(category, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = CategorySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(owner=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def patch(self, request, id=None):
-        category = get_object_or_404(Category, id=id, owner=request.user)
-        serializer = CategorySerializer(category, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
-
-    def delete(self, request, id=None):
-        category = get_object_or_404(Category, id=id, owner=request.user)
-        category.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# ------------------------------------------------------------------------------------#
 
 
 class CustomerListCreateAPIView(APIView):
@@ -96,7 +123,13 @@ class CustomerListCreateAPIView(APIView):
         serializer = CustomerSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                {
+                    "message": "Customer created successfully",  
+                    "data": serializer.data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
         return Response(serializer.errors)
 
     def patch(self, request, id=None):
@@ -104,10 +137,16 @@ class CustomerListCreateAPIView(APIView):
         serializer = CustomerSerializer(customer, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(
+                {
+                    "message": "Customer updated successfully",  
+                    "data": serializer.data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
         return Response(serializer.errors)
 
     def delete(self, request, id=None):
         customer = get_object_or_404(Customer, id=id, owner=request.user)
         customer.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message":"Customer Deleted Sucessfully"} status=status.HTTP_204_NO_CONTENT)
