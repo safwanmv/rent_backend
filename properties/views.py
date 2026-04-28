@@ -25,7 +25,7 @@ class CategoryListCreateAPIView(APIView):
             serializer.save(owner=request.user)
             return Response(
                 {
-                    "message": "Category created successfully",  # 👈 add this
+                    "message": "Category created successfully",
                     "data": serializer.data,
                 },
                 status=status.HTTP_201_CREATED,
@@ -40,7 +40,7 @@ class CategoryListCreateAPIView(APIView):
             serializer.save()
             return Response(
                 {
-                    "message": "Category edited successfully",  # 👈 add this
+                    "message": "Category updated successfully",
                     "data": serializer.data,
                 },
                 status=status.HTTP_201_CREATED,
@@ -91,7 +91,7 @@ class RoomListCreateAPIView(APIView):
             serializer.save()
             return Response(
                 {
-                    "message": "Room edited successfully",
+                    "message": "Room updated  successfully",
                     "data": serializer.data,
                 },
                 status=status.HTTP_201_CREATED,
@@ -101,7 +101,9 @@ class RoomListCreateAPIView(APIView):
     def delete(self, request, id):
         room = get_object_or_404(Room, id=id, owner=request.user)
         room.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"message": "Room Deleted Successfully"}, status=status.HTTP_204_NO_CONTENT
+        )
 
 
 # -------------------------------------------------------------------------------------#
@@ -125,7 +127,7 @@ class CustomerListCreateAPIView(APIView):
             serializer.save(owner=request.user)
             return Response(
                 {
-                    "message": "Customer created successfully",  
+                    "message": "Customer created successfully",
                     "data": serializer.data,
                 },
                 status=status.HTTP_201_CREATED,
@@ -139,7 +141,7 @@ class CustomerListCreateAPIView(APIView):
             serializer.save()
             return Response(
                 {
-                    "message": "Customer updated successfully",  
+                    "message": "Customer updated successfully",
                     "data": serializer.data,
                 },
                 status=status.HTTP_201_CREATED,
@@ -149,4 +151,7 @@ class CustomerListCreateAPIView(APIView):
     def delete(self, request, id=None):
         customer = get_object_or_404(Customer, id=id, owner=request.user)
         customer.delete()
-        return Response({"message":"Customer Deleted Sucessfully"} status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"message": "Customer Deleted Sucessfully"},
+            status=status.HTTP_204_NO_CONTENT,
+        )
