@@ -2,8 +2,15 @@ import uuid
 from django.db import models
 
 
-def generate_id(prefix):
-    return f"{prefix}-{uuid.uuid4().hex[:8].upper()}"
+def generate_custom_id(prefix, owner_id, last_id_str):
+    if last_id_str:
+        try:
+            num = int(last_id_str.split("-")[-1]) + 1
+        except:
+            num = 1
+    else:
+        num = 1
+    return f"{prefix}-{owner_id}-{num:03d}"
 
 
 class Category(models.Model):
@@ -13,7 +20,10 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.category_id:
-            self.category_id = generate_id("CAT")
+            last = Category.objects.filter(owner=self.owner).order_by("-id").first()
+            self.category_id = generate_custom_id(
+                "CAT", self.owner.id, last.category_id if last else None
+            )
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -30,7 +40,10 @@ class Room(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.room_id:
-            self.room_id = generate_id("ROOM")
+            last = Room.objects.filter(owner=self.owner).order_by("-id").first()
+            self.room_id = generate_custom_id(
+                "ROOM", self.owner.id, last.room_id if last else None
+            )
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -49,7 +62,10 @@ class Customer(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.customer_id:
-            self.customer_id = generate_id("CUST")
+            last = Customer.objects.filter(owner=self.owner).order_by("-id").first()
+            self.customer_id = generate_custom_id(
+                "CUST", self.owner.id, last.customer_id if last else None
+            )
         super().save(*args, **kwargs)
 
     def __str__(self):
