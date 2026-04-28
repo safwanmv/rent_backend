@@ -13,12 +13,21 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class RoomSerializer(serializers.ModelSerializer):
+    category_name = serializers.CharField(source="category.name", read_only=True)
+
     class Meta:
         model = Room
-        fields = "__all__"
+        fields = [
+            "id",
+            "room_id",
+            "name",
+            "rent",
+            "advance_amount",
+            "category",
+            "category_name",
+        ]
         extra_kwargs = {
-            "owner": {"read_only": True},
-            "room_id": {"read_only": True},  # 👈 auto-generated
+            "room_id": {"read_only": True},
         }
 
 

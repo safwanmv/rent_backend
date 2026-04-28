@@ -67,8 +67,8 @@ class RoomListCreateAPIView(APIView):
             serializer = RoomSerializer(room)
             return Response(serializer.data)
 
-        room = Room.objects.filter(owner=request.user)
-        serializer = RoomSerializer(room, many=True)
+        rooms = Room.objects.filter(owner=request.user)
+        serializer = RoomSerializer(rooms, many=True)
         return Response(serializer.data)
 
     def post(self, request):
@@ -91,18 +91,18 @@ class RoomListCreateAPIView(APIView):
             serializer.save()
             return Response(
                 {
-                    "message": "Room updated  successfully",
+                    "message": "Room updated successfully",
                     "data": serializer.data,
                 },
-                status=status.HTTP_201_CREATED,
+                status=status.HTTP_200_OK,
             )
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, id):
+    def delete(self, request, id=None):
         room = get_object_or_404(Room, id=id, owner=request.user)
         room.delete()
         return Response(
-            {"message": "Room Deleted Successfully"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Room deleted successfully"}, status=status.HTTP_200_OK
         )
 
 
